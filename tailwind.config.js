@@ -17,6 +17,7 @@ module.exports = {
       },
       fontFamily: {
         'speedy': ['SpeedyRegular', 'monospace'],
+        'eras': ['Orbitron', 'Arial Black', 'sans-serif'],
       },
       animation: {
         'star-movement-bottom': 'star-movement-bottom linear infinite alternate',

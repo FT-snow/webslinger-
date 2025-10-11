@@ -2,7 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Font will be added later */
+/* Import Eras Bold ITC Font */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+/* Custom Font Variables */
+:root {
+  --font-eras: 'Orbitron', 'Arial Black', sans-serif;
+}
 
 * {
   box-sizing: border-box;
