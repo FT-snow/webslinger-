@@ -15,6 +15,15 @@ class SpiderManGameServer {
   }
 
   setupWebSocketServer() {
+    // Add health check endpoint
+    this.server.on('request', (req, res) => {
+      if (req.url === '/health') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ status: 'healthy', timestamp: new Date().toISOString() }));
+        return;
+      }
+    });
+
     this.wss.on('connection', (ws, req) => {
       console.log('🕷️ New Web-Slinger connected!');
       
