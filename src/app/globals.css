@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Font will be added later */
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(135deg, #030104 0%, #021656 50%, #030104 100%);
+  min-height: 100vh;
+}
+
+body {
+  color: #abadbf;
+  background-attachment: fixed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.spider-glow {
+  box-shadow: 0 0 20px rgba(218, 80, 71, 0.5);
+}
+
+.spider-text-glow {
+  text-shadow: 0 0 10px rgba(218, 80, 71, 0.8);
+}
+
+.web-pattern {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(218, 80, 71, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(6, 72, 169, 0.1) 0%, transparent 50%),
+    linear-gradient(45deg, transparent 30%, rgba(218, 80, 71, 0.05) 50%, transparent 70%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #030104;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #da5047;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #822720;
+}
