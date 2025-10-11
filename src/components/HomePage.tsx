@@ -2,11 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import AnimatedContent from './AnimatedContent';
-import StarBorder from './StarBorder';
-import ASCIIText from './ASCIIText';
+import TextPressure from './TextPressure';
 import SpiderManLogo from './SpiderManLogo';
-import Dock from './Dock';
+import MagicBento, { ParticleCard } from './MagicBento';
 import { useWebSocket } from '@/hooks/useWebSocket';
 
 const HomePage = () => {
@@ -14,8 +12,9 @@ const HomePage = () => {
   const [showContent, setShowContent] = useState(false);
   const [playerName, setPlayerName] = useState('');
   const [roomCode, setRoomCode] = useState('');
+  const [showJoinSpider, setShowJoinSpider] = useState(false);
   const router = useRouter();
-  const ws = useWebSocket(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080');
+  const ws = useWebSocket('ws://localhost:8080');
 
   useEffect(() => {
     // Show logo for 5 seconds, then show main content
@@ -30,299 +29,332 @@ const HomePage = () => {
   useEffect(() => {
     // Listen for room creation/join success
     ws.on('room_created', (data) => {
+      console.log('Room created event received:', data);
       router.push(`/room/${data.roomCode}?playerId=${ws.playerId}&name=${encodeURIComponent(playerName)}`);
     });
 
     ws.on('room_joined', (data) => {
+      console.log('Room joined event received:', data);
       router.push(`/room/${data.roomCode}?playerId=${ws.playerId}&name=${encodeURIComponent(playerName)}`);
+    });
+
+    // Add debugging for all WebSocket events
+    ws.on('connected', (data) => {
+      console.log('WebSocket connected:', data);
+    });
+
+    ws.on('error', (data) => {
+      console.error('WebSocket error:', data);
     });
 
     return () => {
       ws.off('room_created');
       ws.off('room_joined');
+      ws.off('connected');
+      ws.off('error');
     };
   }, [ws, router, playerName]);
 
   const handleCreateRoom = () => {
     if (playerName.trim()) {
+      console.log('Creating room with player name:', playerName.trim());
+      console.log('WebSocket connection status:', ws.isConnected);
+      console.log('Player ID:', ws.playerId);
+      
+      if (!ws.isConnected) {
+        console.error('WebSocket is not connected! Make sure the server is running.');
+        alert('Cannot connect to server. Please make sure the WebSocket server is running on localhost:8080');
+        return;
+      }
+      
+      if (!ws.playerId) {
+        console.error('Player ID is not available yet. Waiting for connection...');
+        alert('Connecting to server... Please try again in a moment.');
+        return;
+      }
+      
       ws.createRoom(playerName.trim(), 5);
+    } else {
+      console.log('Player name is empty, cannot create room');
+      alert('Please enter your player name first.');
     }
   };
 
   const handleJoinRoom = () => {
     if (playerName.trim() && roomCode.trim()) {
+      setShowJoinSpider(true);
       ws.joinRoom(roomCode.toUpperCase().trim(), playerName.trim());
+      
+      // Hide spider after 3 seconds
+      setTimeout(() => {
+        setShowJoinSpider(false);
+      }, 3000);
     }
   };
 
-  // Dock items
-  const dockItems = [
-    {
-      icon: (
-        <div className="w-8 h-8 flex items-center justify-center">
-          <span className="text-red-500 text-xl font-bold">🕷️</span>
-        </div>
-      ),
-      label: 'Create Room',
-      onClick: handleCreateRoom,
-    },
-    {
-      icon: (
-        <div className="w-8 h-8 flex items-center justify-center">
-          <span className="text-blue-500 text-xl font-bold">🕸️</span>
-        </div>
-      ),
-      label: 'Join Room',
-      onClick: () => document.getElementById('join-room')?.focus(),
-    },
-    {
-      icon: (
-        <div className="w-8 h-8 flex items-center justify-center">
-          <span className="text-yellow-500 text-xl font-bold">⚡</span>
-        </div>
-      ),
-      label: 'Settings',
-      onClick: () => console.log('Settings clicked'),
-    },
-    {
-      icon: (
-        <div className="w-8 h-8 flex items-center justify-center">
-          <span className="text-green-500 text-xl font-bold">🏆</span>
-        </div>
-      ),
-      label: 'Leaderboard',
-      onClick: () => console.log('Leaderboard clicked'),
-    },
-  ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      {/* Enhanced Background Effects */}
-      <div className="absolute inset-0">
-        {/* Animated Web Patterns */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-20 w-40 h-40 border-2 border-red-500/40 rounded-full animate-spin"></div>
-          <div className="absolute top-40 right-32 w-32 h-32 border-2 border-blue-500/40 rounded-full animate-spin delay-1000"></div>
-          <div className="absolute bottom-40 left-40 w-24 h-24 border-2 border-yellow-500/40 rounded-full animate-spin delay-2000"></div>
-          <div className="absolute bottom-32 right-20 w-36 h-36 border-2 border-green-500/40 rounded-full animate-spin delay-500"></div>
+    <div className="min-h-screen relative overflow-hidden bg-black">
+      {/* Video Background */}
+      <div className="fixed inset-0 z-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover opacity-50"
+        >
+          <source src="/Spiderman Live Wallpaper - The Sensei BG (1080p, h264).mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-black/70"></div>
+      </div>
+      
+      {/* Subtle Star Field */}
+      <div className="absolute inset-0 z-20">
+        {[...Array(100)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-px h-px bg-white rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              opacity: Math.random() * 0.8 + 0.2,
+              animation: `twinkle ${2 + Math.random() * 4}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 2}s`
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* CSS for twinkle animation */}
+      <style jsx>{`
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.2; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+      `}</style>
+
+      {/* Spider Symbol Animation */}
+      {showLogo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
+          <div className="opacity-90">
+            <img 
+              src="/spider.jpg" 
+              alt="Spider Symbol" 
+              className="w-32 h-32 animate-pulse"
+              style={{ mixBlendMode: 'multiply' }}
+            />
+          </div>
         </div>
-        
-        {/* Floating Particles */}
-        <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className={`absolute w-1 h-1 bg-white/60 rounded-full animate-ping`}
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${2 + Math.random() * 2}s`
+      )}
+
+      {/* Join Room Spider Effect */}
+      {showJoinSpider && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
+          <div className="opacity-90 animate-pulse">
+            <img 
+              src="/spider.jpg" 
+              alt="Spider Symbol" 
+              className="w-40 h-40 animate-spin"
+              style={{ 
+                mixBlendMode: 'multiply',
+                animation: 'spin 2s linear infinite, pulse 1s ease-in-out infinite'
               }}
             />
-          ))}
+          </div>
+          <div className="absolute bottom-1/4 text-white text-xl font-bold tracking-wider animate-pulse">
+            Joining Room...
+          </div>
         </div>
-      </div>
-
-      {/* Spider-Man Logo Animation */}
-      {showLogo && (
-        <SpiderManLogo 
-          fadeIn={true}
-          duration={5000}
-          onFadeComplete={() => setShowContent(true)}
-        />
       )}
 
       {/* Main Content */}
       {showContent && (
-        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
-          {/* Enhanced ASCII Title */}
-          <div className="w-full h-96 mb-16 relative">
-            <ASCIIText
-              text="WebSlingers Sketchpad"
-              asciiFontSize={6}
-              textFontSize={160}
-              textColor="#da5047"
-              planeBaseHeight={10}
-              enableWaves={true}
-            />
-            
-            {/* Enhanced Floating Effects */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-8 left-12 w-3 h-3 bg-red-500 rounded-full animate-bounce delay-100 shadow-lg shadow-red-500/50"></div>
-              <div className="absolute top-12 right-16 w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-300 shadow-lg shadow-blue-500/50"></div>
-              <div className="absolute top-20 left-20 w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce delay-500 shadow-lg shadow-yellow-500/50"></div>
-              <div className="absolute top-16 right-12 w-2 h-2 bg-green-500 rounded-full animate-bounce delay-700 shadow-lg shadow-green-500/50"></div>
-              <div className="absolute top-24 left-32 w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce delay-900 shadow-lg shadow-purple-500/50"></div>
+        <div className="relative z-30 min-h-screen flex flex-col items-center px-4 pt-24">
+          {/* Connection Status */}
+          <div className="absolute top-4 right-4 z-50">
+            <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+              ws.isConnected 
+                ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
+                : 'bg-red-500/20 text-red-300 border border-red-500/30'
+            }`}>
+              {ws.isConnected ? '🟢 Connected' : '🔴 Disconnected'}
             </div>
-            
-            {/* Subtitle */}
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center">
-              <h2 className="text-white/80 text-2xl font-eras font-bold tracking-wider">
-                YOUR FRIENDLY NEIGHBORHOOD DRAWING GAME
-              </h2>
-              <div className="w-32 h-1 bg-gradient-to-r from-red-500 via-blue-500 to-yellow-500 mx-auto mt-4 rounded-full"></div>
+          </div>
+          {/* WebSlingers TextPressure */}
+          <div className="w-full max-w-6xl mb-4">
+            <div className="h-40 flex items-center justify-center">
+              <div className="w-5/6">
+                <TextPressure
+                  text="WebSlingers"
+                  textColor="#FFFFFF"
+                  strokeColor="#0080FF"
+                  strokeWidth={4}
+                  stroke={true}
+                  width={true}
+                  weight={true}
+                  italic={true}
+                  flex={true}
+                  minFontSize={64}
+                  className="w-full"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Enhanced Player Setup Form */}
-          <AnimatedContent
-            distance={50}
-            direction="vertical"
-            duration={1}
-            delay={0.5}
-            className="w-full max-w-lg mb-12"
-          >
-            <div className="bg-gradient-to-br from-gray-900/95 via-black/95 to-gray-900/95 backdrop-blur-xl border-2 border-red-500/50 rounded-3xl p-10 shadow-2xl shadow-red-500/20">
-              <div className="text-center mb-8">
-                <h2 className="text-red-500 text-3xl font-eras font-bold mb-4 tracking-wider">
-                  🕷️ ENTER YOUR WEB-SLINGER IDENTITY 🕷️
-                </h2>
-                <div className="w-32 h-1.5 bg-gradient-to-r from-red-500 via-blue-500 to-yellow-500 mx-auto rounded-full"></div>
-              </div>
-              
-              <div className="space-y-8">
-                <div>
-                  <label className="block text-gray-300 text-lg mb-4 font-eras font-bold">
-                    <span className="text-red-500">★</span> WEB-SLINGER NICKNAME
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={playerName}
-                      onChange={(e) => setPlayerName(e.target.value)}
-                      placeholder="Enter your Spider-Alias"
-                      className="w-full px-8 py-6 bg-gradient-to-r from-gray-800/80 to-black/80 border-2 border-gray-600/50 rounded-2xl text-white placeholder-gray-400 focus:border-red-500 focus:outline-none focus:ring-4 focus:ring-red-500/30 transition-all duration-300 text-xl font-eras font-bold shadow-inner backdrop-blur-sm"
-                    />
-                    <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-red-500 text-2xl">
-                      🦸‍♂️
-                    </div>
-                  </div>
-                </div>
+          {/* SKETCHPAD TextPressure */}
+          <div className="w-full max-w-6xl mb-32">
+            <div className="h-32 flex items-center justify-center">
+              <div className="w-3/5">
+                <TextPressure
+                  text="SKETCHPAD"
+                  textColor="#FFFFFF"
+                  strokeColor="#FF0040"
+                  strokeWidth={4}
+                  stroke={true}
+                  width={true}
+                  weight={true}
+                  italic={false}
+                  flex={true}
+                  minFontSize={49}
+                  className="w-full"
+                />
               </div>
             </div>
-          </AnimatedContent>
+          </div>
 
-          {/* Enhanced Action Buttons */}
-          <div className="w-full max-w-2xl space-y-8">
-            {/* Create Room Button */}
-            <AnimatedContent
-              distance={50}
-              direction="vertical"
-              duration={1}
-              delay={1}
-            >
-              <div className="relative group">
+
+          {/* Action Buttons with MagicBento Effects */}
+          <div className="w-full max-w-4xl mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Player Name Input Card */}
+              <ParticleCard
+                className="card flex flex-col justify-center relative aspect-[4/3] min-h-[200px] w-full max-w-full p-6 rounded-[20px] border border-solid border-white/20 bg-black/70 backdrop-blur-3xl font-light overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] card--border-glow"
+                style={{}}
+                disableAnimations={false}
+                particleCount={8}
+                glowColor="0, 128, 255"
+                enableTilt={false}
+                clickEffect={true}
+                enableMagnetism={false}
+              >
+                <div className="card__content flex flex-col relative text-white">
+                  <h3 className="card__title font-normal text-lg m-0 mb-3 text-center">
+                    Player Name
+                  </h3>
+                  <input
+                    type="text"
+                    value={playerName}
+                    onChange={(e) => setPlayerName(e.target.value)}
+                    placeholder="ENTER YOUR NAME"
+                    className="w-full px-4 py-3 bg-black/50 border border-white/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-blue-500/80 transition-all duration-300 text-center tracking-[0.2em] font-['Inter'] font-medium text-sm backdrop-blur-sm"
+                    maxLength={20}
+                  />
+                </div>
+              </ParticleCard>
+
+              {/* Create Room Button Card */}
+              <ParticleCard
+                className={`card flex flex-col justify-center relative aspect-[4/3] min-h-[200px] w-full max-w-full p-6 rounded-[20px] border border-solid font-light overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] card--border-glow ${
+                  playerName.trim()
+                    ? 'bg-gradient-to-br from-red-500/30 to-red-600/20 border-red-500/50 hover:border-red-500/80 hover:shadow-[0_0_30px_rgba(255,0,64,0.3)] text-white'
+                    : 'bg-gradient-to-br from-gray-500/20 to-gray-600/10 border-gray-500/30 cursor-not-allowed opacity-50 text-gray-400'
+                }`}
+                style={{}}
+                disableAnimations={false}
+                particleCount={8}
+                glowColor="255, 0, 64"
+                enableTilt={false}
+                clickEffect={true}
+                enableMagnetism={false}
+              >
                 <button
                   onClick={handleCreateRoom}
-                  className="w-full px-12 py-8 bg-gradient-to-r from-red-600 via-red-500 to-red-600 hover:from-red-500 hover:via-red-400 hover:to-red-500 border-2 border-red-400/50 rounded-3xl shadow-2xl shadow-red-500/30 hover:shadow-red-500/50 transition-all duration-300 transform hover:scale-105 active:scale-95"
+                  disabled={!playerName.trim()}
+                  className="w-full h-full flex flex-col items-center justify-center"
                 >
-                  <div className="flex items-center justify-center space-x-4">
-                    <span className="text-2xl font-eras font-bold text-white tracking-wider">
-                      CREATE A NEW WEB
-                    </span>
-                    <span className="text-4xl animate-pulse">🕷️</span>
+                  <div className="card__content flex flex-col items-center relative text-center">
+                    <span className="text-4xl mb-3">🕷️</span>
+                    <h3 className="card__title font-normal text-lg m-0 mb-2">
+                      Create Web
+                    </h3>
+                    <p className="card__description text-sm opacity-80">
+                      Start a new game
+                    </p>
                   </div>
                 </button>
-                <div className="absolute -top-3 -right-3 w-6 h-6 bg-red-500 rounded-full animate-ping opacity-75 shadow-lg"></div>
-                <div className="absolute -bottom-3 -left-3 w-4 h-4 bg-yellow-500 rounded-full animate-ping opacity-60 delay-500 shadow-lg"></div>
-              </div>
-            </AnimatedContent>
+              </ParticleCard>
 
-            {/* Join Room Section */}
-            <AnimatedContent
-              distance={50}
-              direction="vertical"
-              duration={1}
-              delay={1.2}
-            >
-              <div className="bg-gradient-to-br from-gray-900/95 via-black/95 to-gray-900/95 backdrop-blur-xl border-2 border-blue-500/50 rounded-3xl p-8 shadow-2xl shadow-blue-500/20">
-                <div className="mb-6">
-                  <label className="block text-gray-300 text-lg mb-4 font-eras font-bold">
-                    <span className="text-blue-500">🔗</span> ROOM CODE
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="join-room"
-                      type="text"
-                      value={roomCode}
-                      onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                      placeholder="Enter Room Code"
-                      className="w-full px-8 py-6 bg-gradient-to-r from-gray-800/80 to-black/80 border-2 border-gray-600/50 rounded-2xl text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 text-xl font-eras font-bold text-center tracking-widest shadow-inner backdrop-blur-sm"
-                      maxLength={6}
-                    />
-                    <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-blue-500 text-2xl">
-                      🕸️
-                    </div>
+              {/* Join Room Button Card */}
+              <ParticleCard
+                className={`card flex flex-col justify-center relative aspect-[4/3] min-h-[200px] w-full max-w-full p-6 rounded-[20px] border border-solid font-light overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] card--border-glow ${
+                  playerName.trim()
+                    ? 'bg-gradient-to-br from-blue-500/30 to-blue-600/20 border-blue-500/50 hover:border-blue-500/80 hover:shadow-[0_0_30px_rgba(0,128,255,0.3)] text-white'
+                    : 'bg-gradient-to-br from-gray-500/20 to-gray-600/10 border-gray-500/30 cursor-not-allowed opacity-50 text-gray-400'
+                }`}
+                style={{}}
+                disableAnimations={false}
+                particleCount={8}
+                glowColor="0, 128, 255"
+                enableTilt={false}
+                clickEffect={true}
+                enableMagnetism={false}
+              >
+                <button
+                  onClick={() => playerName.trim() && roomCode.trim() ? handleJoinRoom() : document.getElementById('join-room')?.focus()}
+                  disabled={!playerName.trim()}
+                  className="w-full h-full flex flex-col items-center justify-center"
+                >
+                  <div className="card__content flex flex-col items-center relative text-center">
+                    <span className="text-4xl mb-3">🕸️</span>
+                    <h3 className="card__title font-normal text-lg m-0 mb-2">
+                      Join Web
+                    </h3>
+                    <p className="card__description text-sm opacity-80">
+                      Enter room code below
+                    </p>
                   </div>
-                </div>
-                
-                <div className="relative group">
-                  <button
-                    onClick={handleJoinRoom}
-                    className="w-full px-12 py-8 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 hover:from-blue-500 hover:via-blue-400 hover:to-blue-500 border-2 border-blue-400/50 rounded-3xl shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105 active:scale-95"
-                  >
-                    <div className="flex items-center justify-center space-x-4">
-                      <span className="text-2xl font-eras font-bold text-white tracking-wider">
-                        JOIN A WEB
-                      </span>
-                      <span className="text-4xl animate-pulse">🕸️</span>
-                    </div>
-                  </button>
-                  <div className="absolute -top-3 -right-3 w-6 h-6 bg-blue-500 rounded-full animate-ping opacity-75 shadow-lg"></div>
-                  <div className="absolute -bottom-3 -left-3 w-4 h-4 bg-cyan-500 rounded-full animate-ping opacity-60 delay-500 shadow-lg"></div>
-                </div>
-              </div>
-            </AnimatedContent>
-          </div>
-
-          {/* Enhanced Footer */}
-          <AnimatedContent
-            distance={100}
-            direction="vertical"
-            duration={1.5}
-            delay={1.5}
-            className="mt-20"
-          >
-            <div className="text-center space-y-8">
-              <div className="bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 backdrop-blur-xl border-2 border-gray-700/50 rounded-3xl p-8 max-w-2xl mx-auto shadow-2xl">
-                <div className="text-gray-300 text-xl font-eras font-bold mb-6 tracking-wider">
-                  YOUR FRIENDLY NEIGHBORHOOD SKETCHPAD
-                </div>
-                
-                {/* Enhanced Animated Spider Icon */}
-                <div className="relative mb-8">
-                  <div className="text-9xl animate-bounce">🕷️</div>
-                  <div className="absolute -top-4 -left-4 text-4xl animate-pulse text-yellow-500">⚡</div>
-                  <div className="absolute -bottom-4 -right-4 text-4xl animate-pulse delay-500 text-blue-500">🕸️</div>
-                  <div className="absolute top-1/2 -left-8 text-3xl animate-pulse delay-1000 text-red-500">🦸‍♂️</div>
-                  <div className="absolute top-1/2 -right-8 text-3xl animate-pulse delay-1500 text-green-500">🏆</div>
-                </div>
-                
-                {/* Enhanced Feature Tags */}
-                <div className="flex flex-wrap justify-center gap-3 mb-6">
-                  <span className="px-4 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400 text-sm rounded-full border border-red-500/30 font-eras font-bold shadow-lg">
-                    REAL-TIME MULTIPLAYER
-                  </span>
-                  <span className="px-4 py-2 bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-400 text-sm rounded-full border border-blue-500/30 font-eras font-bold shadow-lg">
-                    AI-POWERED WORDS
-                  </span>
-                  <span className="px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 text-yellow-400 text-sm rounded-full border border-yellow-500/30 font-eras font-bold shadow-lg">
-                    SPIDER-MAN THEMED
-                  </span>
-                </div>
-                
-                <div className="text-gray-400 text-lg font-eras font-bold">
-                  READY TO WEB-SLING YOUR WAY TO VICTORY? 🏆
-                </div>
-              </div>
+                </button>
+              </ParticleCard>
             </div>
-          </AnimatedContent>
 
-          {/* Dock Navigation */}
-          <div className="fixed bottom-0 left-0 right-0 z-20">
-            <Dock items={dockItems} />
+            {/* Room Code Input Card */}
+            <div className="mt-4 max-w-md mx-auto">
+              <ParticleCard
+                className="card flex flex-col justify-center relative aspect-[4/2] min-h-[120px] w-full max-w-full p-6 rounded-[20px] border border-solid border-white/20 bg-black/70 backdrop-blur-3xl font-light overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] card--border-glow"
+                style={{}}
+                disableAnimations={false}
+                particleCount={6}
+                glowColor="0, 128, 255"
+                enableTilt={false}
+                clickEffect={true}
+                enableMagnetism={false}
+              >
+                <div className="card__content flex flex-col relative text-white">
+                  <h3 className="card__title font-normal text-lg m-0 mb-3 text-center">
+                    Room Code
+                  </h3>
+                  <input
+                    id="join-room"
+                    type="text"
+                    value={roomCode}
+                    onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+                    onKeyPress={(e) => e.key === 'Enter' && playerName.trim() && roomCode.trim() && handleJoinRoom()}
+                    placeholder="ENTER CODE"
+                    disabled={!playerName.trim()}
+                    className={`w-full px-4 py-3 rounded-lg text-center tracking-[0.3em] font-['Inter'] font-medium text-lg backdrop-blur-sm focus:outline-none transition-all duration-300 ${
+                      playerName.trim()
+                        ? 'bg-black/50 border border-white/40 hover:border-white/60 focus:border-blue-500/80 text-white placeholder-white/40'
+                        : 'bg-black/30 border border-gray-500/30 text-gray-500 placeholder-gray-600 cursor-not-allowed'
+                    }`}
+                    maxLength={6}
+                  />
+                </div>
+              </ParticleCard>
+            </div>
           </div>
+
+
         </div>
       )}
     </div>
@@ -330,3 +362,4 @@ const HomePage = () => {
 };
 
 export default HomePage;
+

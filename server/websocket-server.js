@@ -249,8 +249,8 @@ class SpiderManGameServer {
       return;
     }
 
-    if (room.players.size < 2) {
-      this.sendError(ws, 'Need at least 2 players to start the game');
+    if (room.players.size < 1) {
+      this.sendError(ws, 'Need at least 1 player to start the game');
       return;
     }
 

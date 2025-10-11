@@ -89,7 +89,7 @@ const ChatAndGuessing: React.FC<ChatAndGuessingProps> = ({
           <div className="text-2xl font-speedy text-white mb-2">
             {wordHint}
           </div>
-          <div className="text-spider-grey text-sm">
+          <div className="text-spider-grey text-base">
             {isDrawing ? 'You are drawing this word' : 'Guess what this word is!'}
           </div>
         </div>
@@ -129,19 +129,19 @@ const ChatAndGuessing: React.FC<ChatAndGuessingProps> = ({
                 <span className="text-lg">{getMessageIcon(message.type)}</span>
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
-                    <span className="text-spider-grey text-xs font-speedy">
+                    <span className="text-spider-grey text-sm font-speedy">
                       {message.playerName}
                     </span>
-                    <span className="text-spider-grey text-xs">
+                    <span className="text-spider-grey text-sm">
                       {message.timestamp.toLocaleTimeString()}
                     </span>
                     {message.isCorrect && (
-                      <span className="text-green-400 text-xs font-bold">
+                      <span className="text-green-400 text-sm font-bold">
                         ✅ CORRECT!
                       </span>
                     )}
                   </div>
-                  <p className={`text-sm ${getMessageColor(message.type, message.isCorrect)}`}>
+                  <p className={`text-base ${getMessageColor(message.type, message.isCorrect)}`}>
                     {message.message}
                   </p>
                 </div>
@@ -158,7 +158,7 @@ const ChatAndGuessing: React.FC<ChatAndGuessingProps> = ({
               <button
                 type="button"
                 onClick={() => setIsGuessMode(!isGuessMode)}
-                className={`px-3 py-1 rounded text-sm font-speedy transition-all duration-300 ${
+                className={`px-3 py-1 rounded text-base font-speedy transition-all duration-300 ${
                   isGuessMode
                     ? 'bg-spider-red text-white spider-glow'
                     : 'bg-spider-navy/50 text-spider-grey hover:bg-spider-navy/70'
@@ -182,7 +182,7 @@ const ChatAndGuessing: React.FC<ChatAndGuessingProps> = ({
                   : "Type a message..."
               }
               disabled={isDrawing}
-              className={`flex-1 px-3 py-2 rounded text-sm font-speedy transition-all duration-300 ${
+              className={`flex-1 px-3 py-2 rounded text-base font-speedy transition-all duration-300 ${
                 isDrawing
                   ? 'bg-spider-grey/30 text-spider-grey cursor-not-allowed'
                   : 'bg-spider-navy/50 border border-spider-grey/30 text-white placeholder-spider-grey focus:border-spider-red focus:outline-none focus:ring-2 focus:ring-spider-red/50'
@@ -191,7 +191,7 @@ const ChatAndGuessing: React.FC<ChatAndGuessingProps> = ({
             <button
               type="submit"
               disabled={!inputMessage.trim() || isDrawing}
-              className={`px-4 py-2 rounded text-sm font-speedy transition-all duration-300 ${
+              className={`px-4 py-2 rounded text-base font-speedy transition-all duration-300 ${
                 !inputMessage.trim() || isDrawing
                   ? 'bg-spider-grey/30 text-spider-grey cursor-not-allowed'
                   : isGuessMode
@@ -206,7 +206,7 @@ const ChatAndGuessing: React.FC<ChatAndGuessingProps> = ({
 
         {/* Instructions */}
         <div className="mt-2 text-center">
-          <div className="text-spider-grey text-xs">
+          <div className="text-spider-grey text-sm">
             {isDrawing ? (
               <>🎨 Focus on drawing! Chat will resume when your turn ends.</>
             ) : hasGuessed ? (

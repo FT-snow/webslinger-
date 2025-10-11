@@ -20,27 +20,33 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
   const [selectedTool, setSelectedTool] = useState('brush');
 
   const colors = [
-    { name: 'Spider Red', value: '#da5047' },
-    { name: 'Spider Blue', value: '#0648a9' },
-    { name: 'Spider Black', value: '#030104' },
-    { name: 'Spider Grey', value: '#abadbf' },
-    { name: 'White', value: '#ffffff' },
-    { name: 'Green', value: '#00ff00' },
-    { name: 'Yellow', value: '#ffff00' },
-    { name: 'Purple', value: '#800080' },
+    { name: 'Spider Red', value: '#da5047', symbol: '🕷️' },
+    { name: 'Spider Blue', value: '#0648a9', symbol: '🕸️' },
+    { name: 'Spider Black', value: '#030104', symbol: '⚫' },
+    { name: 'Spider Grey', value: '#abadbf', symbol: '⚪' },
+    { name: 'White', value: '#ffffff', symbol: '🤍' },
+    { name: 'Green', value: '#00ff00', symbol: '💚' },
+    { name: 'Yellow', value: '#ffff00', symbol: '💛' },
+    { name: 'Purple', value: '#800080', symbol: '💜' },
+    { name: 'Orange', value: '#ff6600', symbol: '🧡' },
+    { name: 'Pink', value: '#ff69b4', symbol: '💗' },
+    { name: 'Cyan', value: '#00ffff', symbol: '💎' },
+    { name: 'Gold', value: '#ffd700', symbol: '✨' },
   ];
 
   const brushSizes = [
-    { name: 'Thin', value: 2 },
-    { name: 'Medium', value: 5 },
-    { name: 'Thick', value: 10 },
-    { name: 'Extra Thick', value: 15 },
+    { name: 'Thin', value: 2, symbol: '—' },
+    { name: 'Medium', value: 5, symbol: '▬' },
+    { name: 'Thick', value: 10, symbol: '▰' },
+    { name: 'Extra Thick', value: 15, symbol: '⬛' },
   ];
 
   const tools = [
     { name: 'Brush', value: 'brush', icon: '🖌️' },
     { name: 'Eraser', value: 'eraser', icon: '🧽' },
     { name: 'Spray', value: 'spray', icon: '💨' },
+    { name: 'Marker', value: 'marker', icon: '🖍️' },
+    { name: 'Highlighter', value: 'highlighter', icon: '✨' },
   ];
 
   useEffect(() => {
@@ -182,14 +188,16 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
                 <button
                   key={color.value}
                   onClick={() => setSelectedColor(color.value)}
-                  className={`w-8 h-8 rounded-full border-2 transition-all duration-300 ${
+                  className={`w-10 h-10 rounded-full border-2 transition-all duration-300 flex items-center justify-center text-lg ${
                     selectedColor === color.value
                       ? 'border-white scale-110 spider-glow'
                       : 'border-gray-600 hover:scale-105'
                   }`}
                   style={{ backgroundColor: color.value }}
                   title={color.name}
-                />
+                >
+                  {color.symbol}
+                </button>
               ))}
             </div>
           </div>
@@ -204,7 +212,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
             >
               {brushSizes.map((size) => (
                 <option key={size.value} value={size.value}>
-                  {size.name} ({size.value}px)
+                  {size.symbol} {size.name} ({size.value}px)
                 </option>
               ))}
             </select>

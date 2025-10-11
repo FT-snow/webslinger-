@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import StarBorder from './StarBorder';
 import { getSpiderManSuggestions, SpiderManSuggestion } from '@/lib/openai';
 
 interface WordSelectorProps {
@@ -115,28 +114,24 @@ const WordSelector: React.FC<WordSelectorProps> = ({ onWordSelect, onClose }) =>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {selectedWords.map((suggestion, index) => (
-              <StarBorder
+              <div
                 key={suggestion.word}
-                color={index === 0 ? '#da5047' : index === 1 ? '#0648a9' : '#abadbf'}
-                speed="3s"
-                className="w-full"
                 onClick={() => handleWordSelect(suggestion.word)}
+                className="text-center p-4 bg-spider-black/90 backdrop-blur-md border border-spider-red/40 rounded-xl hover:border-spider-red/80 transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-[0_0_20px_rgba(218,80,71,0.3)]"
               >
-                <div className="text-center p-4">
-                  <div className="text-2xl mb-2">
-                    {index === 0 ? '🕷️' : index === 1 ? '🕸️' : '⚡'}
-                  </div>
-                  <div className="text-lg font-speedy text-white">
-                    {suggestion.word}
-                  </div>
-                  <div className="text-xs text-spider-grey mt-1">
-                    {suggestion.category} • {suggestion.difficulty}
-                  </div>
-                  <div className="text-xs text-spider-blue mt-1">
-                    {suggestion.description}
-                  </div>
+                <div className="text-2xl mb-2">
+                  {index === 0 ? '🕷️' : index === 1 ? '🕸️' : '⚡'}
                 </div>
-              </StarBorder>
+                <div className="text-lg font-speedy text-white">
+                  {suggestion.word}
+                </div>
+                <div className="text-xs text-spider-grey mt-1">
+                  {suggestion.category} • {suggestion.difficulty}
+                </div>
+                <div className="text-xs text-spider-blue mt-1">
+                  {suggestion.description}
+                </div>
+              </div>
             ))}
           </div>
         )}
