@@ -58,6 +58,7 @@ interface WebSocketMessage {
 
 export const useWebSocket = (url: string = "wss://webslingers-sketchpad-server-production.up.railway.app") => {
   const ws = useRef<WebSocket | null>(null);
+  const wsUrl = useRef(url);
   const [isConnected, setIsConnected] = useState(false);
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [room, setRoom] = useState<Room | null>(null);
@@ -71,7 +72,7 @@ export const useWebSocket = (url: string = "wss://webslingers-sketchpad-server-p
     }
 
     try {
-      ws.current = new WebSocket(url);
+      ws.current = new WebSocket(wsUrl.current);
 
       ws.current.onopen = () => {
         console.log('🕷️ Connected to WebSlingers server!');
@@ -162,7 +163,7 @@ export const useWebSocket = (url: string = "wss://webslingers-sketchpad-server-p
       console.error('Error connecting to WebSocket:', err);
       setError('Failed to connect to server');
     }
-  }, [url]);
+  }, []);
 
   const disconnect = useCallback(() => {
     if (ws.current) {
@@ -262,8 +263,12 @@ export const useWebSocket = (url: string = "wss://webslingers-sketchpad-server-p
 
   useEffect(() => {
     connect();
-    return () => disconnect();
-  }, [connect, disconnect]);
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, []);
 
   return {
     isConnected,
