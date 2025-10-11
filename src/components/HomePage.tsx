@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AnimatedContent from './AnimatedContent';
 import StarBorder from './StarBorder';
-import LightRays from './LightRays';
+// import LightRays from './LightRays';
 import ASCIIText from './ASCIIText';
 import SpiderManLogo from './SpiderManLogo';
 
@@ -41,8 +41,8 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden web-pattern">
-      {/* Background Light Rays */}
-      <LightRays
+      {/* Background Light Rays - Temporarily disabled */}
+      {/* <LightRays
         raysOrigin="top-center"
         raysColor="#da5047"
         raysSpeed={0.8}
@@ -56,7 +56,7 @@ const HomePage = () => {
         noiseAmount={0.15}
         distortion={0.4}
         className="absolute inset-0"
-      />
+      /> */}
 
       {/* Additional Web Pattern Overlay */}
       <div className="absolute inset-0 opacity-10">
