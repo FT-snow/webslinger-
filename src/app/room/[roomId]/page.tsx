@@ -43,7 +43,7 @@ export default function RoomPage() {
   const params = useParams();
   const router = useRouter();
   const roomId = params.roomId as string;
-  const ws = useWebSocket('ws://localhost:8080');
+  const ws = useWebSocket(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8004');
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);

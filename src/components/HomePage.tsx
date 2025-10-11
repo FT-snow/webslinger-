@@ -14,7 +14,7 @@ const HomePage = () => {
   const [roomCode, setRoomCode] = useState('');
   const [showJoinSpider, setShowJoinSpider] = useState(false);
   const router = useRouter();
-  const ws = useWebSocket('ws://localhost:8080');
+  const ws = useWebSocket(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8004');
 
   useEffect(() => {
     // Show logo for 5 seconds, then show main content
