@@ -56,7 +56,7 @@ interface WebSocketMessage {
   [key: string]: any;
 }
 
-export const useWebSocket = (url: string = "ws://213.35.127.100:8004") => {
+export const useWebSocket = (url: string = "wss://webslingers-sketchpad-server-production.up.railway.app") => {
   const ws = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [playerId, setPlayerId] = useState<string | null>(null);

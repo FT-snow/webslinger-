@@ -43,7 +43,7 @@ export default function RoomPage() {
   const params = useParams();
   const router = useRouter();
   const roomId = params.roomId as string;
-  const ws = useWebSocket("ws://213.35.127.100:8004");
+  const ws = useWebSocket("wss://webslingers-sketchpad-server-production.up.railway.app");
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
