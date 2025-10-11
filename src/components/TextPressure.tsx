@@ -2,10 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+interface Point {
+  x: number;
+  y: number;
+}
+
 const TextPressure = ({
   text = 'Compressa',
   fontFamily = 'Compressa VF',
-  // This font is just an example, you should not use it in commercial projects.
   fontUrl = 'https://res.cloudinary.com/dr6lvwubh/raw/upload/v1529908256/CompressaPRO-GX.woff2',
 
   width = true,
@@ -24,12 +28,12 @@ const TextPressure = ({
 
   minFontSize = 24
 }) => {
-  const containerRef = useRef(null);
-  const titleRef = useRef(null);
-  const spansRef = useRef([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const spansRef = useRef<(HTMLSpanElement | null)[]>([]);
 
-  const mouseRef = useRef({ x: 0, y: 0 });
-  const cursorRef = useRef({ x: 0, y: 0 });
+  const mouseRef = useRef<Point>({ x: 0, y: 0 });
+  const cursorRef = useRef<Point>({ x: 0, y: 0 });
 
   const [fontSize, setFontSize] = useState(minFontSize);
   const [scaleY, setScaleY] = useState(1);
@@ -37,18 +41,18 @@ const TextPressure = ({
 
   const chars = text.split('');
 
-  const dist = (a, b) => {
+  const dist = (a: Point, b: Point) => {
     const dx = b.x - a.x;
     const dy = b.y - a.y;
     return Math.sqrt(dx * dx + dy * dy);
   };
 
   useEffect(() => {
-    const handleMouseMove = e => {
+    const handleMouseMove = (e: MouseEvent) => {
       cursorRef.current.x = e.clientX;
       cursorRef.current.y = e.clientY;
     };
-    const handleTouchMove = e => {
+    const handleTouchMove = (e: TouchEvent) => {
       const t = e.touches[0];
       cursorRef.current.x = t.clientX;
       cursorRef.current.y = t.clientY;
@@ -103,7 +107,7 @@ const TextPressure = ({
   }, [scale, text]);
 
   useEffect(() => {
-    let rafId;
+    let rafId: number;
     const animate = () => {
       mouseRef.current.x += (cursorRef.current.x - mouseRef.current.x) / 15;
       mouseRef.current.y += (cursorRef.current.y - mouseRef.current.y) / 15;
@@ -116,22 +120,22 @@ const TextPressure = ({
           if (!span) return;
 
           const rect = span.getBoundingClientRect();
-          const charCenter = {
+          const charCenter: Point = {
             x: rect.x + rect.width / 2,
             y: rect.y + rect.height / 2
           };
 
           const d = dist(mouseRef.current, charCenter);
 
-          const getAttr = (distance, minVal, maxVal) => {
+          const getAttr = (distance: number, minVal: number, maxVal: number) => {
             const val = maxVal - Math.abs((maxVal * distance) / maxDist);
             return Math.max(minVal, val + minVal);
           };
 
           const wdth = width ? Math.floor(getAttr(d, 5, 200)) : 100;
           const wght = weight ? Math.floor(getAttr(d, 100, 900)) : 400;
-          const italVal = italic ? getAttr(d, 0, 1).toFixed(2) : 0;
-          const alphaVal = alpha ? getAttr(d, 0, 1).toFixed(2) : 1;
+          const italVal = italic ? getAttr(d, 0, 1).toFixed(2) : '0';
+          const alphaVal = alpha ? getAttr(d, 0, 1).toFixed(2) : '1';
 
           span.style.opacity = alphaVal;
           span.style.fontVariationSettings = `'wght' ${wght}, 'wdth' ${wdth}, 'ital' ${italVal}`;
@@ -186,7 +190,14 @@ const TextPressure = ({
         }}
       >
         {chars.map((char, i) => (
-          <span key={i} ref={el => (spansRef.current[i] = el)} data-char={char} className="inline-block">
+          <span 
+            key={i} 
+            ref={el => {
+              spansRef.current[i] = el;
+            }} 
+            data-char={char} 
+            className="inline-block"
+          >
             {char}
           </span>
         ))}
