@@ -82,9 +82,9 @@ const WordSelector: React.FC<WordSelectorProps> = ({ onWordSelect, onClose }) =>
     if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else {
+    } else if (selectedWords.length > 0) {
       // Auto-select first word if time runs out
-      onWordSelect(selectedWords[0]);
+      onWordSelect(selectedWords[0].word);
     }
   }, [timeLeft, selectedWords, onWordSelect]);
 

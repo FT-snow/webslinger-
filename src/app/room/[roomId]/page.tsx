@@ -15,6 +15,8 @@ interface Player {
   score: number;
   isHost: boolean;
   isDrawing: boolean;
+  isCurrentDrawer: boolean;
+  hasGuessed: boolean;
 }
 
 interface Message {
@@ -42,9 +44,9 @@ export default function RoomPage() {
 
   // Mock data - will be replaced with Convex
   const [players, setPlayers] = useState<Player[]>([
-    { id: '1', name: 'Spider-Man', score: 0, isHost: true, isDrawing: false },
-    { id: '2', name: 'Miles Morales', score: 0, isHost: false, isDrawing: true },
-    { id: '3', name: 'Gwen Stacy', score: 0, isHost: false, isDrawing: false },
+    { id: '1', name: 'Spider-Man', score: 0, isHost: true, isDrawing: false, isCurrentDrawer: false, hasGuessed: false },
+    { id: '2', name: 'Miles Morales', score: 0, isHost: false, isDrawing: true, isCurrentDrawer: true, hasGuessed: false },
+    { id: '3', name: 'Gwen Stacy', score: 0, isHost: false, isDrawing: false, isCurrentDrawer: false, hasGuessed: false },
   ]);
 
   const [messages, setMessages] = useState<Message[]>([
@@ -223,8 +225,11 @@ export default function RoomPage() {
           <AnimatedContent distance={50} direction="horizontal" duration={1} delay={0.2}>
             <PlayerList 
               players={players}
-              currentPlayerName={currentPlayerName}
-              gameState={gameState}
+              currentDrawer={gameState.currentDrawer || ''}
+              maxRounds={gameState.totalRounds}
+              currentRound={gameState.currentRound}
+              onSetMaxRounds={(rounds) => setGameState(prev => ({ ...prev, totalRounds: rounds }))}
+              isHost={players.find(p => p.name === currentPlayerName)?.isHost || false}
             />
           </AnimatedContent>
         </div>
@@ -235,8 +240,8 @@ export default function RoomPage() {
             <AnimatedContent distance={50} direction="vertical" duration={1} delay={0.4}>
               <DrawingCanvas
                 isDrawing={players.find(p => p.name === currentPlayerName)?.isDrawing || false}
+                currentPlayer={currentPlayerName}
                 onDrawingChange={handleDrawingChange}
-                gameState={gameState}
               />
             </AnimatedContent>
           </div>
@@ -247,7 +252,7 @@ export default function RoomPage() {
               <AnimatedContent distance={100} direction="vertical" duration={1} delay={0}>
                 <WordSelector
                   onWordSelect={handleWordSelect}
-                  currentPlayerName={currentPlayerName}
+                  onClose={() => setGameState(prev => ({ ...prev, gameStatus: 'drawing' }))}
                 />
               </AnimatedContent>
             </div>
@@ -261,9 +266,11 @@ export default function RoomPage() {
               messages={messages}
               onSendMessage={handleSendMessage}
               onSendGuess={handleSendGuess}
+              isDrawing={players.find(p => p.name === currentPlayerName)?.isDrawing || false}
+              currentPlayer={currentPlayerName}
               wordHint={gameState.wordHint}
-              gameState={gameState}
-              currentPlayerName={currentPlayerName}
+              timeLeft={gameState.timeRemaining}
+              hasGuessed={players.find(p => p.name === currentPlayerName)?.hasGuessed || false}
             />
           </AnimatedContent>
         </div>
