@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import TextPressure from './TextPressure';
 import SpiderManLogo from './SpiderManLogo';
 import MagicBento, { ParticleCard } from './MagicBento';
-import { useWebSocket } from '@/hooks/useWebSocket';
+import { useWS } from '@/components/WebSocketProvider';
 
 const HomePage = () => {
   const [showLogo, setShowLogo] = useState(true);
@@ -14,7 +14,7 @@ const HomePage = () => {
   const [roomCode, setRoomCode] = useState('');
   const [showJoinSpider, setShowJoinSpider] = useState(false);
   const router = useRouter();
-  const ws = useWebSocket("wss://webslingers-sketchpad-server-production.up.railway.app");
+  const ws = useWS();
 
   useEffect(() => {
     // Show logo for 5 seconds, then show main content

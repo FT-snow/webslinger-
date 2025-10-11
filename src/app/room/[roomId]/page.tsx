@@ -9,7 +9,7 @@ import DrawingCanvas from '@/components/DrawingCanvas';
 import ChatAndGuessing from '@/components/ChatAndGuessing';
 import WordSelector from '@/components/WordSelector';
 import { ParticleCard } from '@/components/MagicBento';
-import { useWebSocket } from '@/hooks/useWebSocket';
+import { useWS } from '@/components/WebSocketProvider';
 
 interface Player {
   id: string;
@@ -43,7 +43,7 @@ export default function RoomPage() {
   const params = useParams();
   const router = useRouter();
   const roomId = params.roomId as string;
-  const ws = useWebSocket("wss://webslingers-sketchpad-server-production.up.railway.app");
+  const ws = useWS();
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
