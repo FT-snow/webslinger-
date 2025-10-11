@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import AnimatedContent from '@/components/AnimatedContent';
-import LightRays from '@/components/LightRays';
+// import LightRays from '@/components/LightRays';
 import PlayerList from '@/components/PlayerList';
 import DrawingCanvas from '@/components/DrawingCanvas';
 import ChatAndGuessing from '@/components/ChatAndGuessing';
@@ -168,8 +168,8 @@ export default function RoomPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden web-pattern">
-      {/* Background Light Rays */}
-      <LightRays
+      {/* Background Light Rays - Temporarily disabled */}
+      {/* <LightRays
         raysOrigin="top-center"
         raysColor="#da5047"
         raysSpeed={0.8}
@@ -183,7 +183,7 @@ export default function RoomPage() {
         noiseAmount={0.15}
         distortion={0.4}
         className="absolute inset-0"
-      />
+      /> */}
 
       {/* Header */}
       <div className="relative z-10 bg-spider-black/80 backdrop-blur-md border-b border-spider-red/40">

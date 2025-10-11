@@ -6,7 +6,7 @@ import { useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import AnimatedContent from './AnimatedContent';
 import StarBorder from './StarBorder';
-import LightRays from './LightRays';
+// import LightRays from './LightRays';
 import ASCIIText from './ASCIIText';
 import SpiderManLogo from './SpiderManLogo';
 
