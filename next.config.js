@@ -7,8 +7,6 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
     };
-    
-        // Exclude problematic Windows Office files
         config.module.rules.push({
           test: /\.ts$/,
           exclude: [

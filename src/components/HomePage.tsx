@@ -14,7 +14,7 @@ const HomePage = () => {
   const [roomCode, setRoomCode] = useState('');
   const [showJoinSpider, setShowJoinSpider] = useState(false);
   const router = useRouter();
-  const ws = useWebSocket(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8004');
+  const ws = useWebSocket("ws://213.35.127.100:8004");
 
   useEffect(() => {
     // Show logo for 5 seconds, then show main content
@@ -63,7 +63,7 @@ const HomePage = () => {
       
       if (!ws.isConnected) {
         console.error('WebSocket is not connected! Make sure the server is running.');
-        alert('Cannot connect to server. Please make sure the WebSocket server is running on localhost:8080');
+        alert(`Cannot connect to server. Please make sure the WebSocket server is running on ${"ws://213.35.127.100:8004"}`);
         return;
       }
       
