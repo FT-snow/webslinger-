@@ -2,8 +2,5 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
-  "devCommand": "npm run dev",
-  "env": {
-    "NEXT_PUBLIC_CONVEX_URL": "@convex_url"
-  }
+  "devCommand": "npm run dev"
 }

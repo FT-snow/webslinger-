@@ -7,6 +7,7 @@ import StarBorder from './StarBorder';
 import LightRays from './LightRays';
 import ASCIIText from './ASCIIText';
 import SpiderManLogo from './SpiderManLogo';
+import { useWebSocket } from '@/hooks/useWebSocket';
 
 const HomePage = () => {
   const [showLogo, setShowLogo] = useState(true);
@@ -14,6 +15,7 @@ const HomePage = () => {
   const [playerName, setPlayerName] = useState('');
   const [roomCode, setRoomCode] = useState('');
   const router = useRouter();
+  const ws = useWebSocket(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080');
 
   useEffect(() => {
     // Show logo for 3 seconds, then show main content
@@ -25,17 +27,31 @@ const HomePage = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // Listen for room creation/join success
+    ws.on('room_created', (data) => {
+      router.push(`/room/${data.roomCode}?playerId=${ws.playerId}&name=${encodeURIComponent(playerName)}`);
+    });
+
+    ws.on('room_joined', (data) => {
+      router.push(`/room/${data.roomCode}?playerId=${ws.playerId}&name=${encodeURIComponent(playerName)}`);
+    });
+
+    return () => {
+      ws.off('room_created');
+      ws.off('room_joined');
+    };
+  }, [ws, router, playerName]);
+
   const handleCreateRoom = () => {
     if (playerName.trim()) {
-      // Generate a random room code
-      const newRoomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-      router.push(`/room/${newRoomCode}?name=${encodeURIComponent(playerName)}&host=true`);
+      ws.createRoom(playerName.trim(), 5);
     }
   };
 
   const handleJoinRoom = () => {
     if (playerName.trim() && roomCode.trim()) {
-      router.push(`/room/${roomCode.toUpperCase()}?name=${encodeURIComponent(playerName)}&host=false`);
+      ws.joinRoom(roomCode.toUpperCase().trim(), playerName.trim());
     }
   };
 
