@@ -3,7 +3,7 @@ const http = require('http');
 const { v4: uuidv4 } = require('uuid');
 
 class SpiderManGameServer {
-  constructor(port = 8080) {
+  constructor(port = 8004) {
     this.port = port;
     this.server = http.createServer();
     this.wss = new WebSocket.Server({ server: this.server });
@@ -708,6 +708,6 @@ class SpiderManGameServer {
 }
 
 // Start the server
-const server = new SpiderManGameServer(process.env.PORT || 8080);
+const server = new SpiderManGameServer(process.env.PORT || 8004);
 
 module.exports = SpiderManGameServer;
