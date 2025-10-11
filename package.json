@@ -11,6 +11,7 @@
     "convex:deploy": "convex deploy"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.14",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^24.7.1",
     "@types/react": "^18.3.12",
